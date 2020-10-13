@@ -3,10 +3,8 @@ package com.devlog.delog.config;
 import com.devlog.delog.security.Jwt;
 import com.devlog.delog.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,29 +12,27 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.servlet.Filter;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-@Configuration
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsConfig corsConfig;
 
-    @Value("${jwt.secret}")
-    private String secret;
-
+    private final Jwt jwt;
 
     @Bean
-    public Jwt jwt() {
-        return new Jwt(secret);
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Override
@@ -50,21 +46,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        Filter filter = new JwtAuthenticationFilter(
-                authenticationManager(), jwt());
-
         http.formLogin().disable()
                 .csrf().disable()
                 .httpBasic().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().
+                authorizeRequests()
+                .mvcMatchers(HttpMethod.GET).permitAll()// 요청에 대한 사용권한 체크
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**").hasRole("USER")
+                .anyRequest().permitAll() // 그외 나머지 요청은 누구나 접근 가능
                 .and()
-                .addFilter(filter)
                 .addFilter(corsConfig.corsFilter())
-                .authorizeRequests();
-
-        http.authorizeRequests()
-                .mvcMatchers("/", "/api/join", "/api/auth", "/api/info").permitAll()
-                .mvcMatchers(HttpMethod.GET).permitAll()
-                .anyRequest().authenticated();
+                .addFilterBefore(new JwtAuthenticationFilter(jwt),
+                        UsernamePasswordAuthenticationFilter.class);
+        // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
     }
 }

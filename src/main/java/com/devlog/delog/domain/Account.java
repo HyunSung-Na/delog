@@ -1,7 +1,6 @@
 package com.devlog.delog.domain;
 
 import lombok.*;
-import org.springframework.context.annotation.Role;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
