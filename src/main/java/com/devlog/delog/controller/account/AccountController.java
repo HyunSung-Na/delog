@@ -7,7 +7,6 @@ import com.devlog.delog.security.Jwt;
 import com.devlog.delog.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,7 +57,15 @@ public class AccountController {
     public ApiResult<Boolean> checkEmail(Map<String, String> request) {
         String email = request.get("email");
         return ApiResult.OK(
-                accountService.findByEmail(email).isPresent()
+                accountService.checkFindByEmail(email).isPresent()
         );
+    }
+
+    @GetMapping("user/check-email-token/{token}")
+    public ApiResult<AccountDto> checkEmailToken(@PathVariable String token, String email) {
+        Account account = accountService.findByEmail(email);
+        accountService.completeSignUp(account, token);
+        return ApiResult.OK(
+                new AccountDto(account));
     }
 }
