@@ -159,4 +159,9 @@ public class AccountService {
             throw new UnauthorizedException(token);
         }
     }
+
+    public void deleteAccount(Long accountId) {
+        checkNotNull(accountId, "accountId must be provided.");
+        accountRepository.deleteById(accountId);
+    }
 }

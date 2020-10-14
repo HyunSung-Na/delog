@@ -7,6 +7,8 @@ import com.devlog.delog.security.Jwt;
 import com.devlog.delog.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,11 +63,15 @@ public class AccountController {
         );
     }
 
-    @GetMapping("user/check-email-token/{token}")
-    public ApiResult<AccountDto> checkEmailToken(@PathVariable String token, String email) {
-        Account account = accountService.findByEmail(email);
-        accountService.completeSignUp(account, token);
-        return ApiResult.OK(
-                new AccountDto(account));
+    @PostMapping("user/settings/password")
+    public ResponseEntity updatePassword(@AuthenticationPrincipal Account account, String newPassword) {
+        accountService.updatePassword(account, newPassword);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("user/remove/{accountId}")
+    public ResponseEntity deleteAccount(@PathVariable Long accountId) {
+        accountService.deleteAccount(accountId);
+        return ResponseEntity.ok().build();
     }
 }

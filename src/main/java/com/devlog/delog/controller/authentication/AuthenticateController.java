@@ -21,6 +21,21 @@ public class AuthenticateController {
         this.jwt = jwt;
     }
 
+    @GetMapping("check-email-token/{token}{email}")
+    public ApiResult<AuthenticationResultDto> checkEmailToken(@PathVariable String token, @PathVariable String email) {
+        Account account = accountService.findByEmail(email);
+        accountService.completeSignUp(account, token);
+
+        String jwtToken = jwt.createToken(
+                account.getId(),
+                account.getUsername(), account.getEmail(), account.getRoleList().toArray(new String[0]));
+
+        return ApiResult.OK(
+                new AuthenticationResultDto(
+                        new AuthenticationResult(jwtToken, account))
+        );
+    }
+
     @PostMapping
     public ApiResult<AuthenticationResultDto> authenticate (@RequestBody AuthenticationRequest request) {
 
