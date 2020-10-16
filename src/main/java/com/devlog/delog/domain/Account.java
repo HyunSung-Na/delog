@@ -3,6 +3,7 @@ package com.devlog.delog.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -14,7 +15,7 @@ import java.util.*;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
@@ -23,6 +24,7 @@ public class Account {
     @Column
     private String username;
 
+    @Email
     @Column(unique = true)
     private String email;
 

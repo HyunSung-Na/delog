@@ -21,7 +21,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +43,22 @@ public class AccountService {
 
 
     public Account processNewAccount(SignUpRequest signUpRequest) {
+        checkArgument(isNotEmpty(signUpRequest.getName()), "name must be provided.");
+        checkArgument(
+                signUpRequest.getName().length() >= 1 && signUpRequest.getName().length() <= 20,
+                "name length must be between 1 and 10 characters."
+        );
+        checkArgument(isNotEmpty(signUpRequest.getPrincipal()), "email must be provided.");
+        checkArgument(
+                signUpRequest.getPrincipal().length() >= 5 && signUpRequest.getPrincipal().length() <= 50,
+                "email length must be between 1 and 10 characters."
+        );
+
+        checkArgument(isNotEmpty(signUpRequest.getCredentials()), "password must be provided.");
+        checkArgument(
+                signUpRequest.getCredentials().length() >= 1 && signUpRequest.getCredentials().length() <= 1000,
+                "password length must be between 1 and 100 characters."
+        );
         Account newAccount = saveNewAccount(signUpRequest);
         sendSignUpConfirmEmail(newAccount);
         return newAccount;

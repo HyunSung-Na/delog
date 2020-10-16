@@ -78,7 +78,8 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency> <groupId>org.mariadb.jdbc</groupId>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
         </dependency>
         <dependency>
@@ -128,7 +129,6 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.10.8</version>
         </dependency>
-
     </dependencies>
 
     <build>

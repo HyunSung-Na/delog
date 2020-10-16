@@ -1,6 +1,5 @@
 package com.devlog.delog.security;
 
-import com.devlog.delog.domain.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
