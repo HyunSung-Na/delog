@@ -18,6 +18,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,7 +78,7 @@ public class AccountService {
                 .username(signUpRequest.getName())
                 .email(signUpRequest.getPrincipal())
                 .password(signUpRequest.getCredentials())
-                .roles("ROLE_USER")
+                .roles(Collections.singletonList("ROLE_USER"))
                 .joinedAt(LocalDateTime.now())
                 .build();
         account.generateEmailCheckToken();

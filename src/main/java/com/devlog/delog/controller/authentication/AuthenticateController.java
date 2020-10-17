@@ -28,7 +28,7 @@ public class AuthenticateController {
 
         String jwtToken = jwt.createToken(
                 account.getId(),
-                account.getUsername(), account.getEmail(), account.getRoleList().toArray(new String[0]));
+                account.getUsername(), account.getEmail(), account.getRoles().toArray(new String[0]));
 
         return ApiResult.OK(
                 new AuthenticationResultDto(
@@ -46,7 +46,7 @@ public class AuthenticateController {
 
         String jwtToken = jwt.createToken(
                 account.getId(),
-                account.getUsername(), account.getEmail(), account.getRoleList().toArray(new String[0]));
+                account.getUsername(), account.getEmail(), account.getRoles().toArray(new String[0]));
 
         return ApiResult.OK(
                 new AuthenticationResultDto(

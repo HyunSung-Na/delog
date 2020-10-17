@@ -2,13 +2,16 @@ package com.devlog.delog.controller.account;
 
 import com.devlog.delog.controller.ApiResult;
 import com.devlog.delog.domain.Account;
+import com.devlog.delog.error.EmailNotExistedException;
 import com.devlog.delog.error.NotFoundException;
+import com.devlog.delog.error.UnauthorizedException;
 import com.devlog.delog.security.Jwt;
 import com.devlog.delog.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +22,7 @@ import static java.util.stream.Collectors.toList;
 @RestController
 @RequestMapping("api")
 @RequiredArgsConstructor
-public class AccountController {
+public class AccountRestController {
 
     private final AccountService accountService;
 
@@ -30,7 +33,7 @@ public class AccountController {
         Account newAccount = accountService.processNewAccount(signUpRequest);
         String accessToken = jwt.createToken(
                 newAccount.getId(),
-                newAccount.getUsername(), newAccount.getEmail(), newAccount.getRoleList().toArray(new String[0]));
+                newAccount.getUsername(), newAccount.getEmail(), newAccount.getRoles().toArray(new String[0]));
         return ApiResult.OK(
                 new JoinResult(accessToken, newAccount)
         );
@@ -53,6 +56,16 @@ public class AccountController {
                 .map(AccountDto::new)
                 .collect(toList())
         );
+    }
+
+    @GetMapping("/check-email-token{token}{email}")
+    public ApiResult<AccountDto> checkEmailToken(@PathVariable String token, @PathVariable String email) {
+        Account account = accountService.findByEmail(email);
+        if (account == null) {
+            throw new EmailNotExistedException(email);
+        }
+        accountService.completeSignUp(account, token);
+        return ApiResult.OK(new AccountDto(account));
     }
 
     @PostMapping("user/exists")

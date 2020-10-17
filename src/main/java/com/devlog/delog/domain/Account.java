@@ -1,18 +1,22 @@
 package com.devlog.delog.domain;
 
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Builder
 @Getter
 @Entity
 @Table
 @EqualsAndHashCode(of = "id")
-public class Account {
+public class Account implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +32,9 @@ public class Account {
     @Column(unique = true)
     private String email;
 
-    @Column
-    private String roles;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
 
     @Column
     private LocalDateTime joinedAt;
@@ -42,7 +47,7 @@ public class Account {
     @Column
     private LocalDateTime emailCheckTokenGeneratedAt;
 
-    public Account(Long id, String password, String username, String email, String roles, LocalDateTime joinedAt, String emailCheckToken, boolean emailVerified, LocalDateTime emailCheckTokenGeneratedAt) {
+    public Account(Long id, String password, String username, String email, List<String> roles, LocalDateTime joinedAt, String emailCheckToken, boolean emailVerified, LocalDateTime emailCheckTokenGeneratedAt) {
         this.id = id;
         this.password = password;
         this.username = username;
@@ -85,11 +90,35 @@ public class Account {
     }
 
 
-    public List<String> getRoleList(){
-        if(this.roles.length() > 0){
-            return Arrays.asList(this.roles.split(","));
-        }
-        return new ArrayList<>();
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
