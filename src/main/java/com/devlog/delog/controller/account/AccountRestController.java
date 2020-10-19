@@ -28,7 +28,7 @@ public class AccountRestController {
 
     private final Jwt jwt;
 
-    @PostMapping("user/join")
+    @PostMapping("join")
     public ApiResult<JoinResult> join(@ModelAttribute SignUpRequest signUpRequest) {
         Account newAccount = accountService.processNewAccount(signUpRequest);
         String accessToken = jwt.createToken(
@@ -56,16 +56,6 @@ public class AccountRestController {
                 .map(AccountDto::new)
                 .collect(toList())
         );
-    }
-
-    @GetMapping("/check-email-token{token}{email}")
-    public ApiResult<AccountDto> checkEmailToken(@PathVariable String token, @PathVariable String email) {
-        Account account = accountService.findByEmail(email);
-        if (account == null) {
-            throw new EmailNotExistedException(email);
-        }
-        accountService.completeSignUp(account, token);
-        return ApiResult.OK(new AccountDto(account));
     }
 
     @PostMapping("user/exists")

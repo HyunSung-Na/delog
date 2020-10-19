@@ -34,6 +34,7 @@ public class Account implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
+    @Setter
     private List<String> roles = new ArrayList<>();
 
     @Column
@@ -77,6 +78,7 @@ public class Account implements UserDetails {
     }
 
     public void completeSignUp() {
+        this.setRoles(Collections.singletonList("ROLE_USER"));
         this.emailVerified = true;
         this.joinedAt = LocalDateTime.now();
     }

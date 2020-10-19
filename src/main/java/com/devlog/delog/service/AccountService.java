@@ -5,6 +5,7 @@ import com.devlog.delog.controller.account.SignUpRequest;
 import com.devlog.delog.domain.Account;
 import com.devlog.delog.error.EmailExistedException;
 import com.devlog.delog.error.EmailNotExistedException;
+import com.devlog.delog.error.NotFoundException;
 import com.devlog.delog.error.UnauthorizedException;
 import com.devlog.delog.mail.EmailMessage;
 import com.devlog.delog.mail.EmailService;
@@ -78,7 +79,6 @@ public class AccountService {
                 .username(signUpRequest.getName())
                 .email(signUpRequest.getPrincipal())
                 .password(signUpRequest.getCredentials())
-                .roles(Collections.singletonList("ROLE_USER"))
                 .joinedAt(LocalDateTime.now())
                 .build();
         account.generateEmailCheckToken();
@@ -86,11 +86,10 @@ public class AccountService {
     }
 
     public Account authenticate(String email, String password) {
-        Account existed = accountRepository.findByEmail(email);
-        if (existed == null) {
-            throw new EmailExistedException(email);
-        }
         Account user = accountRepository.findByEmail(email);
+        if (user == null) {
+            throw new NotFoundException(email);
+        }
 
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
             throw new UnauthorizedException("Password is wrong");
@@ -173,10 +172,11 @@ public class AccountService {
     public void completeSignUp(Account account, String token) {
         checkNotNull(account, "account must be provided.");
         checkNotNull(token, "token must be provided.");
-        account.completeSignUp();
         if (!account.isValidToken(token)) {
             throw new UnauthorizedException(token);
         }
+
+        account.completeSignUp();
     }
 
     public void deleteAccount(Long accountId) {

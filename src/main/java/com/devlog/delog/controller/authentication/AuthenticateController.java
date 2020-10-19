@@ -9,7 +9,6 @@ import com.devlog.delog.service.AccountService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/auth")
 public class AuthenticateController {
 
     private final AccountService accountService;
@@ -21,8 +20,8 @@ public class AuthenticateController {
         this.jwt = jwt;
     }
 
-    @GetMapping("check-email-token/{token}{email}")
-    public ApiResult<AuthenticationResultDto> checkEmailToken(@PathVariable String token, @PathVariable String email) {
+    @GetMapping("check-email-token")
+    public ApiResult<AuthenticationResultDto> checkEmailToken(String token,  String email) {
         Account account = accountService.findByEmail(email);
         accountService.completeSignUp(account, token);
 
@@ -36,7 +35,7 @@ public class AuthenticateController {
         );
     }
 
-    @PostMapping
+    @PostMapping("api/auth")
     public ApiResult<AuthenticationResultDto> authenticate (@RequestBody AuthenticationRequest request) {
 
         String email = request.getPrincipal();

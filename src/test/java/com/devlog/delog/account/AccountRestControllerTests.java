@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
-import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,22 +43,13 @@ public class AccountRestControllerTests {
     MockMvc mockMvc;
 
     @Autowired
-    private Jwt jwtUtil;
-
-    @Autowired
     private AccountService accountService;
-
-    @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
-    private  PasswordEncoder bCryptPasswordEncoder;
 
 
     @DisplayName("회원 가입 처리 - 입력값 정상")
     @Test
     void signUpSubmit_with_corrent_input() throws Exception{
-        mockMvc.perform(post("/api/user/join")
+        mockMvc.perform(post("/api/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("name", "racoon")
                 .param("principal", "test1111@email.com")
@@ -80,7 +69,7 @@ public class AccountRestControllerTests {
     @DisplayName("회원 가입 처리 - 입력값 오류")
     @Test
     void signUpSubmit_with_wrong_input() throws Exception{
-        mockMvc.perform(post("/api/user/join")
+        mockMvc.perform(post("/api/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("name", "hyun")
                 .param("email", "email..")
@@ -93,13 +82,18 @@ public class AccountRestControllerTests {
     @DisplayName("인증메일 확인 - 입력값 오류")
     @Test
     void checkEmailToken_with_wrong_input() throws Exception{
+        SignUpRequest accountDto = new SignUpRequest();
+        accountDto.setName("hyun");
+        accountDto.setPrincipal("test1234@email.com");
+        accountDto.setCredentials("12345678");
+        Account newAccount = accountService.processNewAccount(accountDto);
+
         mockMvc.perform(get("/check-email-token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("token", "sdfjslwfwef")
-                .param("email", "email@email.com"))
-                .andExpect(status().isOk())
-                .andExpect(unauthenticated());
-
+                .param("token", "adfadfasf")
+                .param("email", newAccount.getEmail()))
+                .andExpect(status().is(401))
+                .andDo(print());
     }
 
     @DisplayName("인증메일 확인 - 입력값 정상")
@@ -117,7 +111,7 @@ public class AccountRestControllerTests {
                 .param("token", newAccount.getEmailCheckToken())
                 .param("email", newAccount.getEmail()))
                 .andExpect(status().isOk())
-                .andExpect(authenticated());
+                .andDo(print());
     }
 
 }

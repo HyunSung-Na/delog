@@ -26,7 +26,7 @@ public class AccountDto {
 
     private LocalDateTime joinedAt;
 
-    private String roles;
+    private List<String> roles;
 
     public AccountDto(Account source) {
         copyProperties(source, this);
@@ -88,20 +88,14 @@ public class AccountDto {
         this.joinedAt = joinedAt;
     }
 
-    public String getRoles() {
+    public List<String> getRoles() {
         return roles;
     }
 
-    public void setRoles(String roles) {
+    public void setRoles(List<String> roles) {
         this.roles = roles;
     }
 
-    public List<String> getRoleList(){
-        if(this.roles.length() > 0){
-            return Arrays.asList(this.roles.split(","));
-        }
-        return new ArrayList<>();
-    }
 
     @Override
     public String toString() {
