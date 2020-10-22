@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -47,6 +48,15 @@ public class Account implements UserDetails {
 
     @Column
     private LocalDateTime emailCheckTokenGeneratedAt;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
+    private final List<Post> boards = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
+    private final List<Likes> like = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
+    private final List<Comment> comments = new ArrayList<>();
 
     public Account(Long id, String password, String username, String email, List<String> roles, LocalDateTime joinedAt, String emailCheckToken, boolean emailVerified, LocalDateTime emailCheckTokenGeneratedAt) {
         this.id = id;
