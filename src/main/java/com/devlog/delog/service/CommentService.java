@@ -1,8 +1,6 @@
 package com.devlog.delog.service;
 
-import com.devlog.delog.domain.Account;
 import com.devlog.delog.domain.Comment;
-import com.devlog.delog.domain.Id;
 import com.devlog.delog.domain.Post;
 import com.devlog.delog.error.NotFoundException;
 import com.devlog.delog.repository.CommentRepository;
@@ -49,9 +47,5 @@ public class CommentService {
 
     private Comment insert(Comment comment) {
         return commentRepository.save(comment);
-    }
-
-    private void update(Comment comment) {
-        commentRepository.save(comment);
     }
 }

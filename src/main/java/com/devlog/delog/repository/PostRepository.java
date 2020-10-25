@@ -1,7 +1,5 @@
 package com.devlog.delog.repository;
 
-import com.devlog.delog.domain.Account;
-import com.devlog.delog.domain.Id;
 import com.devlog.delog.domain.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -7,13 +7,12 @@ import com.devlog.delog.domain.Post;
 import com.devlog.delog.repository.AccountRepository;
 import com.devlog.delog.repository.PostLikeRepository;
 import com.devlog.delog.repository.PostRepository;
-import org.checkerframework.checker.units.qual.A;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -68,9 +67,15 @@ public class PostService {
         });
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Post> findPost(Long postId) {
+        checkNotNull(postId, "postId must be provided.");
+        return postRepository.findById(postId);
+    }
+
 
     @Transactional(readOnly = true)
-    public Page<Post> findAll(int offset, int limit) {
+    public List<Post> findAll(int offset, int limit) {
 
         if (offset < 0)
             offset = 0;
@@ -78,7 +83,7 @@ public class PostService {
             limit = 5;
 
         PageRequest pageRequest = PageRequest.of(offset, limit);
-        return postRepository.findAll(pageRequest);
+        return postRepository.findAll(pageRequest).getContent();
     }
 
 }

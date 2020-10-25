@@ -1,11 +1,14 @@
 package com.devlog.delog.controller.post;
 
+import com.devlog.delog.domain.Post;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Getter @Setter
 public class PostDto {
@@ -27,6 +30,10 @@ public class PostDto {
     private LocalDateTime createAt;
 
     private String writer;
+
+    public PostDto (Post source) {
+        copyProperties(source, this);
+    }
 
     @Override
     public String toString() {
