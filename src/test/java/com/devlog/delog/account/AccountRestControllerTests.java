@@ -1,12 +1,9 @@
 package com.devlog.delog.account;
 
-import com.devlog.delog.controller.account.AccountDto;
 import com.devlog.delog.controller.account.SignUpRequest;
 import com.devlog.delog.domain.Account;
 import com.devlog.delog.mail.EmailMessage;
 import com.devlog.delog.mail.EmailService;
-import com.devlog.delog.repository.AccountRepository;
-import com.devlog.delog.security.Jwt;
 import com.devlog.delog.service.AccountService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

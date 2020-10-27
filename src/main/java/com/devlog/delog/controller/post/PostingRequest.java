@@ -12,7 +12,7 @@ public class PostingRequest {
 
     private String contents;
 
-    protected PostingRequest() {}
+    public PostingRequest() {}
 
     public String getContents() {
         return contents;

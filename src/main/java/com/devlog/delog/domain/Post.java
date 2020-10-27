@@ -39,8 +39,6 @@ public class Post {
     @Column
     private LocalDateTime createAt;
 
-    private String writer;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Account account;
@@ -55,11 +53,11 @@ public class Post {
 
     }
 
-    public Post(String title, String writer, String contents, Account account) {
-        this(null, title, contents, 0, 0, false, null, writer, account);
+    public Post(String title, String contents, Account account) {
+        this(null, title, contents, 0, 0, false, null, account);
     }
 
-    public Post(Long id, String title, String contents, int likes, int commentCount, boolean likeOfMe, LocalDateTime createAt, String writer, Account account) {
+    public Post(Long id, String title, String contents, int likes, int commentCount, boolean likeOfMe, LocalDateTime createAt, Account account) {
         this.id = id;
         this.title = title;
         this.contents = contents;
@@ -67,7 +65,6 @@ public class Post {
         this.commentCount = commentCount;
         this.likeOfMe = likeOfMe;
         this.createAt = createAt;
-        this.writer = writer;
         this.account = account;
     }
 

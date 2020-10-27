@@ -1,5 +1,6 @@
 package com.devlog.delog.controller.post;
 
+import com.devlog.delog.controller.account.AccountDto;
 import com.devlog.delog.domain.Post;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +30,7 @@ public class PostDto {
 
     private LocalDateTime createAt;
 
-    private String writer;
+    private AccountDto writer;
 
     public PostDto (Post source) {
         copyProperties(source, this);

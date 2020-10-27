@@ -4,7 +4,6 @@ import com.devlog.delog.controller.post.PostingRequest;
 import com.devlog.delog.domain.Account;
 import com.devlog.delog.domain.Likes;
 import com.devlog.delog.domain.Post;
-import com.devlog.delog.repository.AccountRepository;
 import com.devlog.delog.repository.PostLikeRepository;
 import com.devlog.delog.repository.PostRepository;
 import org.springframework.data.domain.PageRequest;
@@ -17,27 +16,23 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@Transactional
 @Service
 public class PostService {
-
-    private final AccountRepository accountRepository;
 
     private final PostRepository postRepository;
 
     private final PostLikeRepository postLikeRepository;
 
-    public PostService(AccountRepository accountRepository, PostRepository postRepository, PostLikeRepository postLikeRepository) {
-        this.accountRepository = accountRepository;
+    public PostService(PostRepository postRepository, PostLikeRepository postLikeRepository) {
         this.postRepository = postRepository;
         this.postLikeRepository = postLikeRepository;
     }
 
-    @Transactional
     public Post write(PostingRequest postingRequest, Account writer) {
         Post newPost = Post.builder()
                 .contents(postingRequest.getContents())
                 .commentCount(0)
-                .writer(writer.getUsername())
                 .title(postingRequest.getTitle())
                 .likes(0)
                 .account(writer)
@@ -47,7 +42,6 @@ public class PostService {
     }
 
 
-    @Transactional
     public Optional<Post> like(Long postId, Account account) {
         checkNotNull(postId, "postId must be provided.");
         checkNotNull(account, "account must be provided.");
